@@ -276,22 +276,24 @@ export default function Sidebar({ onClose }: SidebarProps): React.ReactElement {
   return (
     <div className="flex h-full flex-col relative">
       {/* Subtle gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-accent-dim/5 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-accent/[0.03] via-transparent to-sensor/[0.02] pointer-events-none" />
 
       {/* Logo */}
-      <div className="relative flex h-16 items-center gap-3 border-b border-white/5 px-5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-accent-hover shadow-glow">
+      <div className="relative flex h-16 items-center gap-3 border-b border-white/[0.06] px-5">
+        <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-accent via-accent to-sensor shadow-glow">
           <Satellite className="h-5 w-5 text-base-primary" />
+          {/* Animated ring */}
+          <div className="absolute inset-0 rounded-xl border border-accent/30 animate-pulse-slow" />
         </div>
         <div className="flex flex-col">
-          <span className="text-sm font-bold text-text-primary tracking-tight">AgroCareGeo</span>
-          <span className="text-[10px] text-text-muted font-mono tracking-wider">COMMAND CENTER</span>
+          <span className="text-sm font-bold text-text-primary tracking-tight font-display">AgroCareGeo</span>
+          <span className="text-[10px] text-accent/70 font-mono tracking-[0.2em]">COMMAND CENTER</span>
         </div>
         {onClose && (
           <button
             onClick={onClose}
             aria-label="Close sidebar"
-            className="ml-auto text-text-muted hover:text-text-primary lg:hidden"
+            className="ml-auto p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-white/5 transition-all lg:hidden"
           >
             <X className="h-4 w-4" />
           </button>
@@ -299,38 +301,56 @@ export default function Sidebar({ onClose }: SidebarProps): React.ReactElement {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-4" aria-label="Main navigation">
-        {visibleGroups.map((group) => (
-          <div key={group.label}>
+      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1" aria-label="Main navigation">
+        {visibleGroups.map((group, idx) => (
+          <div key={group.label} className={idx > 0 ? 'pt-2' : ''}>
+            {/* Group separator line */}
+            {idx > 0 && <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent mb-3" />}
+            
             <button
               onClick={() => toggleGroup(group.label)}
               aria-expanded={!collapsedGroups.has(group.label)}
               aria-controls={`nav-group-${group.label}`}
-              className="flex w-full items-center justify-between px-3 py-1.5 mb-1"
+              className="flex w-full items-center justify-between px-3 py-2 mb-1 rounded-lg hover:bg-white/[0.02] transition-colors group"
             >
-              <span className="section-header mb-0">{group.label}</span>
+              <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-text-muted group-hover:text-text-secondary transition-colors font-display">
+                {group.label}
+              </span>
               <ChevronDown
-                className={`h-3 w-3 text-text-muted transition-transform duration-200 ${
+                className={`h-3.5 w-3.5 text-text-muted/50 group-hover:text-text-muted transition-all duration-200 ${
                   collapsedGroups.has(group.label) ? '-rotate-90' : ''
                 }`}
               />
             </button>
-            {!collapsedGroups.has(group.label) && (
-              <ul id={`nav-group-${group.label}`} className="flex flex-col gap-0.5">
+            
+            <div
+              className={`overflow-hidden transition-all duration-300 ease-out ${
+                collapsedGroups.has(group.label) ? 'max-h-0 opacity-0' : 'max-h-[500px] opacity-100'
+              }`}
+            >
+              <ul id={`nav-group-${group.label}`} className="flex flex-col gap-0.5 pb-1">
                 {group.items.map((item) => (
                   <li key={item.to}>
                     <NavLink
                       to={item.to}
                       onClick={onClose}
-                      className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                      className={({ isActive }) =>
+                        `group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
+                          isActive
+                            ? 'bg-accent/[0.12] text-accent shadow-inner-glow border-l-2 border-accent ml-0.5'
+                            : 'text-text-secondary hover:bg-white/[0.04] hover:text-text-primary border-l-2 border-transparent ml-0.5'
+                        }`
+                      }
                     >
-                      {item.icon}
-                      {item.label}
+                      <span className="transition-transform duration-200 group-hover:scale-110">
+                        {item.icon}
+                      </span>
+                      <span>{item.label}</span>
                     </NavLink>
                   </li>
                 ))}
               </ul>
-            )}
+            </div>
           </div>
         ))}
 
@@ -341,13 +361,16 @@ export default function Sidebar({ onClose }: SidebarProps): React.ReactElement {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-white/5 px-4 py-4">
+      <div className="border-t border-white/[0.06] px-4 py-4 bg-gradient-to-t from-base-primary/50 to-transparent">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-accent status-pulse" aria-hidden="true" />
-            <span className="text-xs text-text-muted">სისტემა აქტიური</span>
+          <div className="flex items-center gap-2.5">
+            <div className="relative">
+              <div className="w-2 h-2 rounded-full bg-accent" />
+              <div className="absolute inset-0 w-2 h-2 rounded-full bg-accent animate-ping opacity-75" />
+            </div>
+            <span className="text-xs text-text-secondary font-medium">სისტემა აქტიური</span>
           </div>
-          <span className="text-[10px] text-text-muted font-mono">v2.0.1</span>
+          <span className="text-[10px] text-text-muted font-mono bg-white/[0.03] px-2 py-0.5 rounded">v2.0.1</span>
         </div>
       </div>
     </div>
