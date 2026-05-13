@@ -128,49 +128,46 @@ export default function FinancesDashboard(): React.ReactElement {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-text-primary flex items-center gap-2">
-            <Wallet className="h-7 w-7 text-accent" />
-            ფინანსები
-          </h1>
-          <p className="text-text-secondary mt-1 text-sm">კულტურების საოპერაციო ხარჯების მართვა და ანალიზი</p>
+        <div className="flex items-center gap-4">
+          <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-sensor via-sensor to-accent shadow-glow-blue">
+            <Wallet className="h-6 w-6 text-base-primary" />
+            <div className="absolute inset-0 rounded-xl border border-sensor/30 animate-pulse-slow" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-text-primary font-display tracking-tight">ფინანსები</h1>
+            <p className="text-text-secondary mt-0.5 text-sm">კულტურების საოპერაციო ხარჯების მართვა და ანალიზი</p>
+          </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2.5">
           <button
             onClick={handleExport}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-text-secondary hover:bg-white/5 transition-all text-sm"
+            className="btn-outline flex items-center gap-2"
           >
             <Download className="h-4 w-4" />
-            Excel
+            <span className="hidden sm:inline">Excel</span>
           </button>
           <button
             onClick={() => { setEditingOp(null); setShowForm(true) }}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-lg shadow-accent/20"
-            style={{
-              background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
-              color: '#fff',
-            }}
+            className="btn-blue flex items-center gap-2"
           >
             <Plus className="h-4 w-4" />
-            ოპერაცია
+            <span>ოპერაცია</span>
           </button>
         </div>
       </div>
 
       {/* Filters */}
-      <div
-        className="rounded-2xl p-4"
-        style={{
-          background: 'linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
-          border: '1px solid rgba(255,255,255,0.06)',
-        }}
-      >
+      <div className="card-flat rounded-xl p-4">
         <div className="flex flex-wrap items-center gap-3">
-          <Filter className="h-4 w-4 text-text-muted" />
+          <div className="flex items-center gap-2 text-text-muted">
+            <Filter className="h-4 w-4" />
+            <span className="text-xs font-medium uppercase tracking-wider font-display">ფილტრები</span>
+          </div>
+          <div className="h-4 w-px bg-white/10" />
           <select
             value={filters.crop_type}
             onChange={(e) => setFilters((f) => ({ ...f, crop_type: e.target.value }))}
-            className="select text-sm py-1.5 bg-white/5"
+            className="select text-sm py-1.5"
           >
             <option value="">ყველა კულტურა</option>
             {cropTypes.map((c) => (
@@ -180,7 +177,7 @@ export default function FinancesDashboard(): React.ReactElement {
           <select
             value={filters.operation_type}
             onChange={(e) => setFilters((f) => ({ ...f, operation_type: e.target.value }))}
-            className="select text-sm py-1.5 bg-white/5"
+            className="select text-sm py-1.5"
           >
             {OP_TYPE_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>{o.label}</option>
@@ -189,7 +186,7 @@ export default function FinancesDashboard(): React.ReactElement {
           <select
             value={filters.status}
             onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value }))}
-            className="select text-sm py-1.5 bg-white/5"
+            className="select text-sm py-1.5"
           >
             {STATUS_OPTIONS.map((s) => (
               <option key={s.value} value={s.value}>{s.label}</option>
@@ -198,7 +195,7 @@ export default function FinancesDashboard(): React.ReactElement {
           <select
             value={filters.parcel_id}
             onChange={(e) => setFilters((f) => ({ ...f, parcel_id: e.target.value }))}
-            className="select text-sm py-1.5 bg-white/5"
+            className="select text-sm py-1.5"
           >
             <option value="">ყველა ნაკვეთი</option>
             {allParcels.map((p) => (
@@ -209,17 +206,18 @@ export default function FinancesDashboard(): React.ReactElement {
             type="date"
             value={filters.date_from}
             onChange={(e) => setFilters((f) => ({ ...f, date_from: e.target.value }))}
-            className="input text-sm py-1.5 bg-white/5"
+            className="input text-sm py-1.5"
           />
           <input
             type="date"
             value={filters.date_to}
             onChange={(e) => setFilters((f) => ({ ...f, date_to: e.target.value }))}
-            className="input text-sm py-1.5 bg-white/5"
+            className="input text-sm py-1.5"
           />
           <button
             onClick={() => setFilters({ crop_type: '', operation_type: '', status: '', parcel_id: '', date_from: '', date_to: '' })}
-            className="text-text-muted hover:text-text-primary text-sm p-1 rounded-lg hover:bg-white/5 transition-colors"
+            className="btn-ghost btn-icon-sm text-text-muted hover:text-danger"
+            title="ფილტრების გასუფთავება"
           >
             <X className="h-4 w-4" />
           </button>

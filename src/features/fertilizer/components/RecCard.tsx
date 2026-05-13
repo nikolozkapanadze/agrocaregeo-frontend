@@ -34,8 +34,8 @@ export function RecCard({ rec, moonActivity }: RecCardProps): React.ReactElement
 
   return (
     <div
-      className="rounded-lg border border-bg-border bg-bg-card p-4"
-      style={{ borderLeft: `4px solid ${borderColor}` }}
+      className="card card-sm transition-all duration-300 hover:shadow-elevation-3"
+      style={{ borderLeft: `3px solid ${borderColor}` }}
     >
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -43,43 +43,50 @@ export function RecCard({ rec, moonActivity }: RecCardProps): React.ReactElement
           <div className="flex items-center gap-2">
             <Link
               to={`/parcels`}
-              className="truncate text-sm font-semibold text-text-primary hover:text-accent"
+              className="truncate text-sm font-semibold text-text-primary hover:text-accent transition-colors"
             >
               {rec.parcel_nr}
             </Link>
             <span
-              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium"
-              style={{ backgroundColor: `${cropColor}20`, color: cropColor, border: `1px solid ${cropColor}40` }}
+              className="chip"
+              style={{ backgroundColor: `${cropColor}15`, color: cropColor, borderColor: `${cropColor}30` }}
               title={cropType}
             >
               <CropIcon className="h-3 w-3" />
               {cropName}
             </span>
-            <span className="rounded bg-bg-secondary px-1.5 py-0.5 text-[10px] text-text-muted">
+            <span className="badge badge-neutral text-[10px]">
               {rec.zone}
             </span>
           </div>
-          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-secondary">
-            <span>{rec.area_ha.toFixed(2)} ჰა</span>
-            <span>
-              NDVI: <strong className={(rec.ndvi ?? 0) < 0.3 ? 'text-zone-critical' : 'text-zone-ok'}>{rec.ndvi?.toFixed(2) ?? '—'}</strong>
+          <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-secondary">
+            <span className="font-mono tabular-nums">{rec.area_ha.toFixed(2)} ჰა</span>
+            <span className="flex items-center gap-1">
+              NDVI: <strong className={`font-mono ${(rec.ndvi ?? 0) < 0.3 ? 'text-zone-critical' : 'text-zone-ok'}`}>{rec.ndvi?.toFixed(2) ?? '—'}</strong>
             </span>
-            <span className="inline-flex items-center gap-1 rounded bg-bg-secondary px-1.5 py-0.5">
+            <span className="chip chip-accent text-[10px]">
               <span className="text-text-muted">ფაზა:</span>
-              <strong className="text-text-primary">{getCropStatusLabel(rec.crop_module || cropType, rec.crop_status)}</strong>
+              <strong>{getCropStatusLabel(rec.crop_module || cropType, rec.crop_status)}</strong>
             </span>
           </div>
         </div>
         <div className="text-right">
-          <div className="text-xs font-semibold" style={{ color: borderColor }}>
+          <div 
+            className="text-xs font-semibold px-2 py-1 rounded-lg"
+            style={{ 
+              color: borderColor, 
+              backgroundColor: `${borderColor}15`,
+              border: `1px solid ${borderColor}30`
+            }}
+          >
             {priority.icon} {priority.label}
           </div>
-          <div className="mt-0.5 text-[11px] text-text-muted">{rec.timing}</div>
+          <div className="mt-1.5 text-[11px] text-text-muted">{rec.timing}</div>
         </div>
       </div>
 
       {/* Fertilizer recommendations */}
-      <div className="mt-3">
+      <div className="mt-4">
         {rec.recommendations.length === 0 ? (
           <NoFertilizerNeeded rec={rec} />
         ) : (
@@ -120,16 +127,19 @@ function NoFertilizerNeeded({ rec }: { rec: Recommendation }): React.ReactElemen
 
 function VraZonesPanel({ zones }: { zones: NonNullable<Recommendation['vra_zones']> }): React.ReactElement {
   return (
-    <div className="rounded-lg border border-accent/30 bg-accent/5 p-3">
-      <h4 className="mb-2 text-xs font-semibold text-accent">📍 VRA ოპტიმიზაცია — ზონების მიხედვით შეტანა</h4>
-      <div className="space-y-2">
+    <div className="card-flat rounded-xl border-accent/25 bg-accent/[0.06] p-4">
+      <h4 className="mb-3 text-xs font-semibold text-accent flex items-center gap-2 uppercase tracking-wider">
+        <span className="w-1.5 h-1.5 rounded-full bg-accent shadow-glow-sm" />
+        VRA ოპტიმიზაცია — ზონების მიხედვით შეტანა
+      </h4>
+      <div className="space-y-2.5">
         {zones.map((zone, idx) => (
-          <div key={idx} className="rounded border border-bg-border bg-bg-primary/50 p-2">
-            <div className="mb-1 flex items-center justify-between">
+          <div key={idx} className="rounded-lg border border-white/[0.06] bg-white/[0.03] p-3">
+            <div className="mb-2 flex items-center justify-between">
               <span className="text-xs font-medium text-text-primary">
                 {zone.zone_label} — <span className="text-text-secondary">{zone.ndvi_class}</span>
               </span>
-              <span className="text-[10px] text-text-muted">{zone.area_ha.toFixed(2)} ჰა</span>
+              <span className="text-[10px] text-text-muted font-mono">{zone.area_ha.toFixed(2)} ჰა</span>
             </div>
             <div className="grid grid-cols-4 gap-2 text-[10px]">
               <MineralDose label="N" value={zone.n_dose_kg_ha} color="#fbc02d" />
@@ -137,12 +147,12 @@ function VraZonesPanel({ zones }: { zones: NonNullable<Recommendation['vra_zones
               <MineralDose label="K" value={zone.k_dose_kg_ha} color="#d32f2f" />
               <MineralDose label="Mg" value={zone.mg_dose_kg_ha} color="#388e3c" />
             </div>
-            <div className="mt-1 text-[10px] text-text-muted">{zone.action}</div>
+            <div className="mt-2 text-[10px] text-text-muted">{zone.action}</div>
           </div>
         ))}
       </div>
-      <p className="mt-2 text-[10px] text-text-muted">
-        💡 VRA ზონები გამოთვლილია სატელიტის NDVI მონაცემების საფუძველზე. ნიადაგი საკმარისია, მაგრამ ზონების
+      <p className="mt-3 text-[10px] text-text-muted leading-relaxed">
+        VRA ზონები გამოთვლილია სატელიტის NDVI მონაცემების საფუძველზე. ნიადაგი საკმარისია, მაგრამ ზონების
         მიხედვით ოპტიმიზაცია რეკომენდებულია.
       </p>
     </div>
@@ -162,9 +172,12 @@ function MineralDose({ label, value, color }: { label: string; value: number; co
 
 function MineralStatusPanel({ rec }: { rec: Recommendation }): React.ReactElement {
   return (
-    <div className="rounded-lg border border-bg-border bg-bg-secondary p-3">
-      <h4 className="mb-2 text-xs font-semibold text-text-secondary">🧪 მინერალური ანალიზის შედეგები</h4>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+    <div className="card-flat rounded-xl p-4">
+      <h4 className="mb-3 text-xs font-semibold text-text-secondary flex items-center gap-2 uppercase tracking-wider">
+        <span className="w-1.5 h-1.5 rounded-full bg-sensor" />
+        მინერალური ანალიზის შედეგები
+      </h4>
+      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
         <MineralStatusBox
           label="აზოტი (N)"
           dose={rec.n_remaining}
@@ -194,8 +207,8 @@ function MineralStatusPanel({ rec }: { rec: Recommendation }): React.ReactElemen
           confidence={rec.confidence}
         />
       </div>
-      <p className="mt-2 text-[10px] text-text-muted">
-        💡 მინერალური ანალიზი ეფუძნება სატელიტის მონაცემებს, ამინდის პროგნოზს და ნიადაგის ლაბორატორიულ ანალიზს
+      <p className="mt-3 text-[10px] text-text-muted leading-relaxed">
+        მინერალური ანალიზი ეფუძნება სატელიტის მონაცემებს, ამინდის პროგნოზს და ნიადაგის ლაბორატორიულ ანალიზს
         (თუ არის)
       </p>
     </div>
@@ -210,31 +223,31 @@ function FertilizerList({
   moonActivity: string
 }): React.ReactElement {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2.5">
       {recommendations.map((fr, idx) => {
         const moonTiming = getMoonTiming(moonActivity, getAppMode(fr.type))
         return (
-          <div key={idx} className="rounded border border-bg-border bg-bg-primary px-3 py-2 text-xs">
+          <div key={idx} className="card-flat rounded-xl px-4 py-3 text-xs">
             <div className="flex flex-wrap items-center justify-between gap-1">
-              <span className="font-semibold text-text-primary">
-                <span className="mr-1 text-[10px] uppercase text-text-muted">[{fr.type}]</span>
+              <span className="font-semibold text-text-primary flex items-center gap-2">
+                <span className="badge badge-neutral text-[9px] uppercase">{fr.type}</span>
                 {fr.fertilizer_name}
               </span>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <span
                   title={moonTiming.tip}
                   className={`cursor-help text-[10px] font-medium ${moonTiming.color}`}
                 >
                   {moonTiming.label}
                 </span>
-                <span className="font-medium text-accent">{fr.price_gel.toFixed(0)} ₾</span>
+                <span className="font-bold text-accent font-mono">{fr.price_gel.toFixed(0)} ₾</span>
               </div>
             </div>
-            <div className="mt-1 flex flex-wrap gap-3 text-text-secondary">
-              <span>{fr.kg_ha.toFixed(0)} კგ/ჰა</span>
-              <span>{fr.kg_total.toFixed(0)} კგ სულ</span>
+            <div className="mt-2 flex flex-wrap gap-4 text-text-secondary">
+              <span className="font-mono">{fr.kg_ha.toFixed(0)} კგ/ჰა</span>
+              <span className="font-mono">{fr.kg_total.toFixed(0)} კგ სულ</span>
             </div>
-            <div className="mt-0.5 text-text-muted">{fr.reason}</div>
+            <div className="mt-1.5 text-text-muted leading-relaxed">{fr.reason}</div>
           </div>
         )
       })}
@@ -244,16 +257,20 @@ function FertilizerList({
 
 function SoilNotes({ notes, sampleDate }: { notes: string[]; sampleDate?: string }): React.ReactElement {
   return (
-    <div className="mt-3 rounded border border-yellow-500/20 bg-yellow-500/5 px-3 py-2 text-[11px]">
-      <div className="mb-1 font-semibold text-yellow-400">
-        🧪 ნიადაგის ანალიზი
+    <div className="mt-4 card-flat rounded-xl border-warning/25 bg-warning/[0.06] px-4 py-3 text-[11px]">
+      <div className="mb-2 font-semibold text-warning flex items-center gap-2">
+        <span className="w-1.5 h-1.5 rounded-full bg-warning" />
+        ნიადაგის ანალიზი
         {sampleDate && sampleDate !== '—' && (
-          <span className="ml-1 font-normal text-text-muted">({sampleDate})</span>
+          <span className="font-normal text-text-muted">({sampleDate})</span>
         )}
       </div>
-      <ul className="flex flex-col gap-0.5 text-text-secondary">
+      <ul className="flex flex-col gap-1 text-text-secondary">
         {notes.map((note, i) => (
-          <li key={i}>• {note}</li>
+          <li key={i} className="flex items-start gap-2">
+            <span className="text-warning mt-0.5">•</span>
+            {note}
+          </li>
         ))}
       </ul>
     </div>
@@ -264,18 +281,22 @@ function RecFooter({ rec }: { rec: Recommendation }): React.ReactElement {
   const satIndicator = getDataQualityIndicator(rec.data_quality?.satellite_age_days)
 
   return (
-    <div className="mt-3 flex flex-wrap gap-4 border-t border-bg-border pt-2 text-[11px] text-text-muted">
-      <span>
-        🌧 წვიმა 3დ: <strong className="text-text-secondary">{rec.rain_3d.toFixed(0)}mm</strong>
+    <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 border-t border-white/[0.06] pt-3 text-[11px] text-text-muted">
+      <span className="flex items-center gap-1.5">
+        <span className="text-sensor">●</span>
+        წვიმა 3დ: <strong className="text-text-secondary font-mono">{rec.rain_3d.toFixed(0)}mm</strong>
       </span>
-      <span>
-        🌡 T°max: <strong className="text-text-secondary">{rec.tmax.toFixed(0)}°C</strong>
+      <span className="flex items-center gap-1.5">
+        <span className="text-danger">●</span>
+        T°max: <strong className="text-text-secondary font-mono">{rec.tmax.toFixed(0)}°C</strong>
       </span>
-      <span>
-        N შეტანილი 30დ: <strong className="text-text-secondary">{rec.last_n_applied.toFixed(0)} კგ/ჰა</strong>
+      <span className="flex items-center gap-1.5">
+        <span className="text-warning">●</span>
+        N შეტანილი 30დ: <strong className="text-text-secondary font-mono">{rec.last_n_applied.toFixed(0)} კგ/ჰა</strong>
       </span>
-      <span>
-        📡 სატელიტი: <strong className="text-text-secondary">{rec.sat_date}</strong>
+      <span className="flex items-center gap-1.5">
+        <span className="text-accent">●</span>
+        სატელიტი: <strong className="text-text-secondary">{rec.sat_date}</strong>
         {rec.data_quality?.satellite_age_days !== undefined && (
           <span className={satIndicator.warningClass}>
             ({rec.data_quality.satellite_age_days} დღის წინ{satIndicator.warningText})
@@ -283,15 +304,16 @@ function RecFooter({ rec }: { rec: Recommendation }): React.ReactElement {
         )}
       </span>
       {rec.confidence && (
-        <span>
-          🎯 სიზუსტე:{" "}
+        <span className="flex items-center gap-1.5">
+          <span className="text-info">●</span>
+          სიზუსტე:{" "}
           <strong
             className={
               rec.confidence === 'high'
-                ? 'text-green-400'
+                ? 'text-accent'
                 : rec.confidence === 'medium'
-                  ? 'text-yellow-400'
-                  : 'text-orange-400'
+                  ? 'text-warning'
+                  : 'text-danger'
             }
           >
             {rec.confidence === 'high' ? 'მაღალი' : rec.confidence === 'medium' ? 'საშუალო' : 'დაბალი'}
